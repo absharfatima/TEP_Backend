@@ -4,19 +4,19 @@ const PurchaseOrder = require("../models/purchaseOrdersModel"); // Assuming you 
 const BusinessRequest = require("../models/businessRequestModel"); // Assuming you have BusinessRequest model
 const BusinessInvoice = require("../models/businessInvoiceModel"); // Assuming you have BusinessInvoice model
 const TrainerInvoice = require("../models/trainerInvoiceModel"); // Assuming you have TrainerInvoice model
-
+ 
 const getAdminDashboard = (req, res) => {
   res.send("Welcome to the Admin Dashboard");
 };
-
+ 
 const getTrainerDashboard = (req, res) => {
   res.send("Welcome to the Trainer Dashboard");
 };
-
+ 
 const getBusinessDashboard = (req, res) => {
   res.send("Welcome to the Business Dashboard");
 };
-
+ 
 const getTrainers = async (req, res) => {
   try {
     const trainers = await Trainer.find();
@@ -26,7 +26,7 @@ const getTrainers = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
+ 
 const getCompanies = async (req, res) => {
   try {
     const companies = await Company.find();
@@ -36,7 +36,7 @@ const getCompanies = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
+ 
 const updateTrainer = async (req, res) => {
   const { id } = req.params;
   const updatedData = req.body;
@@ -53,10 +53,28 @@ const updateTrainer = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
+ 
 const deleteTrainer = async (req, res) => {
   const { id } = req.params;
   try {
+    const trainer = await Trainer.findById(id);
+    if (!trainer) {
+      return res.status(404).json({ message: "Trainer not found" });
+    }
+ 
+    // Check if the trainer has any active purchase orders
+    const activePurchaseOrders = await PurchaseOrder.find({
+      trainerEmail: trainer.email,
+      endDate: { $gte: new Date() }, // End date is in the future
+      startDate: { $lte: new Date() }, // Start date is in the past
+    });
+ 
+    if (activePurchaseOrders.length > 0) {
+      return res
+        .status(400)
+        .json({ message: "Trainer has active purchase orders" });
+    }
+ 
     await Trainer.findByIdAndDelete(id);
     res.status(200).json({ message: "Trainer deleted successfully" });
   } catch (error) {
@@ -64,7 +82,11 @@ const deleteTrainer = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
+ 
+module.exports = {
+  deleteTrainer,
+};
+ 
 const updateCompany = async (req, res) => {
   const companyId = req.params.id;
   const updatedCompanyData = req.body;
@@ -79,7 +101,7 @@ const updateCompany = async (req, res) => {
     res.status(500).json({ message: "Error updating company details", error });
   }
 };
-
+ 
 const deleteCompany = async (req, res) => {
   const companyId = req.params.id;
   try {
@@ -89,7 +111,7 @@ const deleteCompany = async (req, res) => {
     res.status(500).json({ message: "Error deleting company", error });
   }
 };
-
+ 
 // const getBusinessRequests = async (req, res) => {
 //   try {
 //     const data = await BusinessRequest.aggregate([
@@ -114,8 +136,7 @@ const deleteCompany = async (req, res) => {
 //     res.status(500).json({ error: "Internal server error" });
 //   }
 // };
-
-
+ 
 const getBusinessRequests = async (req, res) => {
   try {
     const data = await BusinessRequest.aggregate([
@@ -153,7 +174,7 @@ const getBusinessRequests = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
+ 
 const getPurchaseOrders = async (req, res) => {
   try {
     const purchaseOrders = await PurchaseOrder.find();
@@ -163,7 +184,7 @@ const getPurchaseOrders = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
+ 
 const createPurchaseOrder = async (req, res) => {
   const {
     businessRequestId,
@@ -194,7 +215,7 @@ const createPurchaseOrder = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
+ 
 const deleteBusinessRequest = async (req, res) => {
   const requestId = req.params.id;
   try {
@@ -208,7 +229,7 @@ const deleteBusinessRequest = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
+ 
 const getPurchaseOrderDetails = async (req, res) => {
   try {
     const purchaseOrdersDetails = await PurchaseOrder.aggregate([
@@ -267,7 +288,7 @@ const getPurchaseOrderDetails = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
+ 
 const getTrainerInvoices = async (req, res) => {
   try {
     const trainerInvoices = await TrainerInvoice.find();
@@ -276,7 +297,7 @@ const getTrainerInvoices = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
+ 
 const createBusinessInvoice = async (req, res) => {
   try {
     const {
@@ -290,7 +311,7 @@ const createBusinessInvoice = async (req, res) => {
       technologies,
       paymentStatus,
     } = req.body;
-
+ 
     await TrainerInvoice.updateMany(
       { _id: invoiceId },
       { $set: { paymentStatus: true } }
@@ -300,7 +321,7 @@ const createBusinessInvoice = async (req, res) => {
       purchaseOrder.businessRequestId
     );
     const company = await Company.findById(businessRequest.uniqueId);
-
+ 
     const companyName = company.companyName;
     const amount = businessRequest.trainingBudget;
     const businessEmail = company.email;
@@ -317,15 +338,15 @@ const createBusinessInvoice = async (req, res) => {
       businessEmail,
     });
     console.log(newInvoice);
-
+ 
     await newInvoice.save();
-
+ 
     res.status(201).json(newInvoice);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
-
+ 
 const getTechnologySell = async (req, res) => {
   try {
     const technologyData = await BusinessRequest.aggregate([
@@ -347,7 +368,7 @@ const getTechnologySell = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
+ 
 const getBusinessRequestsGraph = async (req, res) => {
   try {
     const businessRequests = await BusinessRequest.find();
@@ -362,7 +383,66 @@ const getBusinessRequestsGraph = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
+ 
+const checkPurchaseOrders = async (req, res) => {
+  const { email } = req.params;
+  try {
+    // Check if there are any active purchase orders for the given email
+    const activePurchaseOrders = await PurchaseOrder.find({
+      trainerEmail: email,
+      endDate: { $gte: new Date() }, // End date is in the future
+      startDate: { $lte: new Date() }, // Start date is in the past
+    });
+ 
+    res.status(200).json({ hasActiveOrders: activePurchaseOrders.length > 0 });
+  } catch (error) {
+    console.error("Error checking purchase orders:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+ 
+const getCompaniesWithDeletionRequest = async (req, res) => {
+  try {
+    const companies = await Company.find({ deletionRequest: true });
+    res.status(200).json(companies);
+  } catch (error) {
+    console.error('Error fetching companies with deletion request:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+ 
+const deleteAdminCompany = async (req, res) => {
+  const companyId = req.params.id;
+  try {
+    await Company.findByIdAndDelete(companyId);
+    res.json({ message: 'Company deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting company:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+ 
+const getDeleteTrainers = async (req, res) => {
+  try {
+    const trainers = await Trainer.find({ requestDeletion: true });
+    res.status(200).json(trainers);
+  } catch (error) {
+    console.error("Error fetching trainers:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+ 
+const deleteAdminTrainer = async (req, res) => {
+  const trainerId = req.params.id;
+  try {
+    await Trainer.findByIdAndDelete(trainerId);
+    res.json({ message: "Trainer deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting trainer:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+ 
 module.exports = {
   getAdminDashboard,
   getTrainerDashboard,
@@ -382,4 +462,10 @@ module.exports = {
   createBusinessInvoice,
   getTechnologySell,
   getBusinessRequestsGraph,
+  checkPurchaseOrders,
+  getCompaniesWithDeletionRequest,
+  deleteAdminCompany,
+  getDeleteTrainers,
+  deleteAdminTrainer
 };
+ 
