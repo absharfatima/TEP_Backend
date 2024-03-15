@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 
 // Define the feedback schema
 const feedbackSchema = new mongoose.Schema({
-  company_id: String,
+  company_id: String, 
   trainer_name: String,
   trainer_id: String,
   stars: Number,
