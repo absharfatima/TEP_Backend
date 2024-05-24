@@ -74,25 +74,15 @@ exports.getCompanyByEmail = async (req, res) => {
     if (!company) {
       return res.status(404).json({ message: "Company not found" });
     }
+
+    // Check if the company has requested deletion
+    if (company.requestDeletion) {
+      return res.status(403).json({ message: "This account has requested deletion and cannot be accessed." });
+    }
     res.status(200).json(company);
   } catch (error) {
     console.error("Error finding company:", error);
     res.status(500).json({ message: "Internal server error" });
-  }
-};
- 
-exports.deleteCompany = async (req, res) => {
-  try {
-    const email = req.params.email;
-    const company = await Company.findOne({ email });
-    if (!company) {
-      return res.status(404).json({ message: "Company not found" });
-    }
-    await company.deleteOne();
-    res.json({ message: "Company deleted successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
   }
 };
  
@@ -151,7 +141,6 @@ exports.getBusinessInvoices = async (req, res) => {
   }
 };
  
- 
 exports.getCurrentInvoices = async (req, res) => {
   try {
     const { businessEmail } = req.params;
@@ -186,47 +175,6 @@ exports.getTrainerEmails = async (req, res) => {
   }
 };
  
-//Deleting compnay request
-exports.deleteCompanyRequest = async (req, res) => {
-  try {
-    const email = req.params.email;
- 
-    // Find the company by email
-    const company = await Company.findOne({ email });
- 
-    if (!company) {
-      return res.status(404).json({ error: 'Company not found' });
-    }
- 
-    // Update the requestDeletion field to true
-    company.requestDeletion = true;
-    await company.save();
- 
-    // Respond with success message
-    return res.json({ message: 'Deletion request sent successfully' });
-  } catch (error) {
-    console.error('Error handling deletion request:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
- 
- 
-// Unpaid invoices status check for account deletion
-exports.checkUnpaidStatus = async (req, res) => {
-  try {
-    const email = req.params.email;
- 
-    // Check for unpaid invoices with the specified email and unpaid status
-    const unpaidInvoices = await BusinessInvoice.find({ businessEmail: email, paymentStatus: false });
- 
-    res.json(unpaidInvoices);
-  } catch (error) {
-    console.error('Error fetching unpaid invoices:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
- 
- 
 //accepting invoice
 exports.acceptInvoice = async (req, res) => {
   try {
@@ -249,7 +197,6 @@ exports.acceptInvoice = async (req, res) => {
   }
 };
  
- 
 // DELETE route to reject a business invoice
 exports.rejectInvoice = async (req, res) => {
   const { id } = req.params;
@@ -267,4 +214,58 @@ exports.rejectInvoice = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// Unpaid invoices status check for account deletion
+exports.checkUnpaidStatus = async (req, res) => {
+  try {
+    const email = req.params.email;
  
+    // Check for unpaid invoices with the specified email and unpaid status
+    const unpaidInvoices = await BusinessInvoice.find({ businessEmail: email, paymentStatus: false });
+ 
+    res.json(unpaidInvoices);
+  } catch (error) {
+    console.error('Error fetching unpaid invoices:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+ 
+//api for request deletion
+exports.requestDeletion = async (req, res) => {
+  try {
+    const email = req.params.email; // Extract email from the request parameters
+ 
+    // Find the company by email
+    const company = await Company.findOne({ email });
+ 
+    if (!company) {
+      return res.status(404).json({ error: 'Company not found' });
+    }
+ 
+    // Update the requestDeletion field to true
+    company.requestDeletion = true;
+    await company.save();
+ 
+    // Respond with success message
+    return res.status(200).json({ message: 'Deletion request sent successfully' });
+  } catch (error) {
+    console.error('Error handling deletion request:', error);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+ 
+//api to delete company
+exports.deleteCompanyByEmail = async (req, res) => {
+  try {
+    const email = req.params.email;
+    const company = await Company.findOne({ email });
+    if (!company) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+    await company.deleteOne();
+    res.json({ message: "Company deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

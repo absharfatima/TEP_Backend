@@ -60,6 +60,11 @@ const getTrainerByEmail = async (req, res) => {
     if (!trainer) {
       return res.status(404).json({ message: "Trainer not found" });
     }
+
+    // Check if the trainer has requested deletion
+    if (trainer.requestDeletion) {
+      return res.status(403).json({ message: "This account has requested deletion and cannot be accessed." });
+    }
  
     res.status(200).json(trainer);
   } catch (error) {
@@ -68,232 +73,6 @@ const getTrainerByEmail = async (req, res) => {
   }
 };
 
-// Update trainer by email endpoint
-// const updateTrainerByEmail = async (req, res) => {
-//   const { email: updatedEmail } = req.params; // Rename 'email' to 'updatedEmail'
- 
-//   try {
-//     // Find the trainer by email
-//     let trainer = await Trainer.findOne({ email: updatedEmail });
-//     if (!trainer) {
-//       return res.status(404).json({ message: "Trainer not found" });
-//     }
- 
-//     // Update trainer fields
-//     const {
-//       // password,
-//       name,
-//       // email,
-//       contactNumber,
-//       skills,
-//       city,
-//       // chargePerDay,
-//       trainerType,
-//       openToTravel,
-//       deliveryMode,
-//       clients,
-//       Resume,
-//       linkedInUrl
-//     } = req.body;
- 
-//     if (password) {
-//       trainer.password = password;
-//     }
-//     if (name) {
-//       trainer.name = name;
-//     }
-//     if (email) {
-//       trainer.email = email;
-//     }
-//     if (contactNumber) {
-//       trainer.contactNumber = contactNumber;
-//     }
-//     if (skills) {
-//       trainer.skills = skills;
-//     }
-//     if (city) {
-//       trainer.city = city;
-//     }
-//     if (chargePerDay) {
-//       trainer.chargePerDay = chargePerDay;
-//     }
-//     if (trainerType !== undefined) {
-//       trainer.trainerType = trainerType;
-//     }
-//     if (openToTravel !== undefined) {
-//       trainer.openToTravel = openToTravel;
-//     }
-//     if (deliveryMode !== undefined) {
-//       trainer.deliveryMode = deliveryMode;
-//     }
-//     if (clients) {
-//       trainer.clients = clients;
-//     }
-//     if (Resume) {
-//       trainer.Resume = Resume;
-//     }
-//     if (linkedInUrl) {
-//       trainer.linkedInUrl = linkedInUrl;
-//     }
- 
-//     // Save the updated trainer
-//     trainer = await trainer.save();
- 
-//     res.status(200).json({ message: "Trainer updated successfully", trainer });
-//   } catch (error) {
-//     console.error("Error updating trainer:", error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// };
-
-// const updateTrainerByEmail = async (req, res) => {
-//   const { email: updatedEmail } = req.params; // Rename 'email' to 'updatedEmail'
-
-//   try {
-//     // Find the trainer by email
-//     let trainer = await Trainer.findOne({ email: updatedEmail });
-//     if (!trainer) {
-//       return res.status(404).json({ message: "Trainer not found" });
-//     }
-
-//     // Update trainer fields
-//     const {
-//       // password,
-//       name,
-//       contactNumber,
-//       city,
-//       // chargePerDay,
-//       trainerType,
-//       openToTravel,
-//       deliveryMode,
-//       clients,
-//       Resume,
-//       linkedInUrl,
-//       skill,
-//       price
-//     } = req.body;
-
-   
-//     if (name) {
-//       trainer.name = name;
-//     }
-//     if (contactNumber) {
-//       trainer.contactNumber = contactNumber;
-//     }
-//     if (city) {
-//       trainer.city = city;
-//     }
-   
-//     if (trainerType !== undefined) {
-//       trainer.trainerType = trainerType;
-//     }
-//     if (openToTravel !== undefined) {
-//       trainer.openToTravel = openToTravel;
-//     }
-//     if (deliveryMode !== undefined) {
-//       trainer.deliveryMode = deliveryMode;
-//     }
-//     if (clients) {
-//       trainer.clients = clients;
-//     }
-//     if (Resume) {
-//       trainer.Resume = Resume;
-//     }
-//     if (linkedInUrl) {
-//       trainer.linkedInUrl = linkedInUrl;
-//     }
-//     if (skill && price) {
-//       // Ensure skills field exists and is an object
-//       trainer.skills = trainer.skills || {};
-//       // Add or update the skill with the provided price
-//       trainer.skills[skill] = price;
-//     }
-
-//     // Save the updated trainer
-//     trainer = await trainer.save();
-
-//     res.status(200).json({ message: "Trainer updated successfully", trainer });
-//   } catch (error) {
-//     console.error("Error updating trainer:", error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// };
-
-// const updateTrainerByEmail = async (req, res) => {
-//   const { email: updatedEmail } = req.params; // Rename 'email' to 'updatedEmail'
-//    console.log(req.body)
-//   try {
-//     // Find the trainer by email
-//     let trainer = await Trainer.findOne({ email: updatedEmail });
-//     if (!trainer) {
-//       return res.status(404).json({ message: "Trainer not found" });
-//     }
-
-//     // Update trainer fields
-//     const {
-//       // password,
-//       name,
-//       contactNumber,
-//       city,
-//       // chargePerDay,
-//       trainerType,
-//       openToTravel,
-//       deliveryMode,
-//       clients,
-//       Resume,
-//       linkedInUrl,
-//       skills // Update to properly access skills from the request body
-//     } = req.body;
-
-
-
-//     if (name) {
-//       trainer.name = name;
-//     }
-//     if (contactNumber) {
-//       trainer.contactNumber = contactNumber;
-//     }
-//     if (city) {
-//       trainer.city = city;
-//     }
-//     if (trainerType !== undefined) {
-//       trainer.trainerType = trainerType;
-//     }
-//     if (openToTravel !== undefined) {
-//       trainer.openToTravel = openToTravel;
-//     }
-//     if (deliveryMode !== undefined) {
-//       trainer.deliveryMode = deliveryMode;
-//     }
-//     if (clients) {
-//       trainer.clients = clients;
-//     }
-//     if (Resume) {
-//       trainer.Resume = Resume;
-//     }
-//     if (linkedInUrl) {
-//       trainer.linkedInUrl = linkedInUrl;
-//     }
-  
-// console.log(skills)
-
-//     if (skills) {
-//       // Ensure skills field exists and is an object
-//       trainer.skills = trainer.skills || {};
-//       // Iterate over the skills object in the request body and update the trainer's skills
-//       Object.entries(skills).forEach(([skill, price]) => {
-//         trainer.skills[skill] = price;
-//       });
-//     }
-//     // Save the updated trainer
-//     trainer = await trainer.save();
-
-//     res.status(200).json({ message: "Trainer updated successfully", trainer });
-//   } catch (error) {
-//     console.error("Error updating trainer:", error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// };
 
 const updateTrainerByEmail = async (req, res) => {
   const { email: updatedEmail } = req.params; // Rename 'email' to 'updatedEmail'
@@ -480,45 +259,6 @@ const raiseInvoiceByPoId = async (req, res) => {
   }
 };
 
-//check the PO of training before deleting the account
-const checkTrainings = async (req, res) => {
-  try {
-    const email = req.params.email;
- 
-    // Query purchase orders to check for ongoing or upcoming trainings
-    const currentDate = new Date();
-    const hasOngoingOrUpcomingTrainings = await PurchaseOrder.exists({
-      trainerEmail: email,
-      endDate: { $gte: currentDate },
-    });
- 
-    return res.status(200).json({ hasOngoingOrUpcomingTrainings });
-  } catch (error) {
-    console.error('Error checking trainings:', error);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
-const requestDeletion = async (req, res) => {
-  try {
-    const email = req.params.email; // Extract email from the request parameters
-    // Find the trainer by their email
-    const trainer = await Trainer.findOne({ email });
-    if (!trainer) {
-      return res.status(404).json({ message: 'Trainer not found' });
-    }
- 
-    // Update the requestDeletion field to true
-    trainer.requestDeletion = true;
-    await trainer.save();
- 
-    // Send response
-    return res.status(200).json({ message: 'Request for deletion sent to admin' });
-  } catch (error) {
-    console.error('Error requesting deletion:', error);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-};
 
 // GET Trainer Invoice by email
 const getInvoiceByEmail = async (req, res) => {
@@ -551,29 +291,6 @@ const getInvoiceById = async (req, res) => {
   }
 };
 
-//Api for deleting a trainer account
-const deleteByEmail = async (req, res) => {
-  const email = req.params.email;
-
-  try {
-    // Find the trainer by ID
-    const trainer = await Trainer.findOne({ email });
-
-    if (!trainer) {
-      return res.status(404).json({ error: "Trainer not found" });
-    }
-
-    // Perform additional checks if needed (e.g., ensure the request is coming from the authenticated trainer)
-
-    // Delete the trainer
-    await trainer.deleteOne();
-
-    res.json({ message: "Trainer account deleted successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
 
 // To get the count of purchase order
 const getCountPoByEmail = async (req, res) => {
@@ -650,7 +367,70 @@ const getCurrentTrainings = async (req, res) => {
   }
 };
 
+//check the PO of training before deleting the account
+const checkTrainings = async (req, res) => {
+  try {
+    const email = req.params.email;
+ 
+    // Query purchase orders to check for ongoing or upcoming trainings
+    const currentDate = new Date();
+    const hasOngoingOrUpcomingTrainings = await PurchaseOrder.exists({
+      trainerEmail: email,
+      endDate: { $gte: currentDate },
+    });
+ 
+    return res.status(200).json({ hasOngoingOrUpcomingTrainings });
+  } catch (error) {
+    console.error('Error checking trainings:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
+//api for request deletion
+const requestDeletion = async (req, res) => {
+  try {
+    const email = req.params.email; // Extract email from the request parameters
+    // Find the trainer by their email
+    const trainer = await Trainer.findOne({ email });
+    if (!trainer) {
+      return res.status(404).json({ message: 'Trainer not found' });
+    }
+ 
+    // Update the requestDeletion field to true
+    trainer.requestDeletion = true;
+    await trainer.save();
+ 
+    // Send response
+    return res.status(200).json({ message: 'Request for deletion sent to admin' });
+  } catch (error) {
+    console.error('Error requesting deletion:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+//Api for deleting a trainer account
+const deleteTrainerByEmail = async (req, res) => {
+  const email = req.params.email;
+
+  try {
+    // Find the trainer by ID
+    const trainer = await Trainer.findOne({ email });
+
+    if (!trainer) {
+      return res.status(404).json({ error: "Trainer not found" });
+    }
+
+    // Perform additional checks if needed (e.g., ensure the request is coming from the authenticated trainer)
+
+    // Delete the trainer
+    await trainer.deleteOne();
+
+    res.json({ message: "Trainer account deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 
 module.exports = {
@@ -665,7 +445,7 @@ module.exports = {
   raiseInvoiceByPoId,
   getInvoiceByEmail,
   getInvoiceById,
-  deleteByEmail,
+  deleteTrainerByEmail,
   getCountPoByEmail,
   getTrainingCount,
   getCurrentTrainings,

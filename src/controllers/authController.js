@@ -74,6 +74,16 @@ const login = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    // Check if the user has requested account deletion for trainer
+    if (role === "trainer" && user.requestDeletion) {
+      return res.status(403).json({ message: "This account has requested deletion and cannot be accessed." });
+    }
+
+    // Check if the user has requested account deletion for company
+    if (role === "company" && user.requestDeletion) {
+      return res.status(403).json({ message: "This account has requested deletion and cannot be accessed." });
+    }
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (isPasswordValid) {
       // Generate token with addiional uniqueId for company users

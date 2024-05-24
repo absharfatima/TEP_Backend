@@ -39,13 +39,13 @@ router.get("/admincompanies", async (req, res) => {
 router.put("/admintrainers/:id", async (req, res) => {
   await adminController.updateTrainer(req, res);
 });
- 
-router.delete("/admintrainers/:id", async (req, res) => {
-  await adminController.deleteTrainer(req, res);
-});
- 
+
 router.put("/admincompanies/:id", async (req, res) => {
   await adminController.updateCompany(req, res);
+});
+
+router.delete("/admintrainers/:id", async (req, res) => {
+  await adminController.deleteTrainer(req, res);
 });
  
 router.delete("/admincompanies/:id", async (req, res) => {
@@ -100,17 +100,14 @@ router.get('/admintrainerdeleterequest', async (req, res) => {
   await adminController.getTrainersWithDeletionRequest(req, res);
 });
  
-router.delete('/admindeleterequest/:id', async (req, res) => {
+router.delete('/admindeletecompanies/:id', async (req, res) => {
   await adminController.deleteAdminCompany(req, res);
 });
  
-router.get("/admindeletetrainers", async (req, res) => {
-  await adminController.getDeleteTrainers(req, res);
-});
- 
 router.delete("/admindeletetrainers/:id", async (req, res) => {
-  await adminController.deleteTrainer(req, res);
+  await adminController.deleteAdminTrainer(req, res);
 });
  
 module.exports = router;
  
+

@@ -4,7 +4,7 @@ const {
   registerCompany,
   updateCompany,
   getCompanyByEmail,
-  deleteCompanyRequest,
+  deleteCompanyByEmail,
   checkEmailExistence,
   submitBusinessRequest,
   getBusinessInvoices,
@@ -14,6 +14,7 @@ const {
   getTrainerEmails,
   checkUnpaidStatus,
   rejectInvoice,
+  requestDeletion
 } = require("../controllers/companyController");
 const { authenticateJWT, authorizeRole } = require("../config/auth");
  
@@ -25,10 +26,7 @@ router.put("/companies/:email", updateCompany);
  
 // Find company by email endpoint
 router.get("/companies/:email", getCompanyByEmail);
- 
-// Delete company by email endpoint
-router.post("/companies/requestDeletion/:email", deleteCompanyRequest);
- 
+  
 // Check if an email exists endpoint
 router.get("/check-email", checkEmailExistence);
  
@@ -57,6 +55,12 @@ router.get("/finalinvoices/:businessEmail", getCurrentInvoices);
  
 //check unpaid status invoices
 router.get("/businessinvoices/unpaid/:email", checkUnpaidStatus);
+
+// Trainer request deletion endpoint
+router.post("/companies/requestDeletion/:email", requestDeletion);
+
+// Delete a trainer account endpoint
+router.delete("/company/:email", deleteCompanyByEmail)
  
 module.exports = router;
  

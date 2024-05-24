@@ -83,10 +83,6 @@ const deleteTrainer = async (req, res) => {
   }
 };
  
-module.exports = {
-  deleteTrainer,
-};
- 
 const updateCompany = async (req, res) => {
   const companyId = req.params.id;
   const updatedCompanyData = req.body;
@@ -403,7 +399,7 @@ const checkPurchaseOrders = async (req, res) => {
  
 const getCompaniesWithDeletionRequest = async (req, res) => {
   try {
-    const companies = await Company.find({ deletionRequest: true });
+    const companies = await Company.find({ requestDeletion: true });
     res.status(200).json(companies);
   } catch (error) {
     console.error('Error fetching companies with deletion request:', error);
@@ -422,12 +418,12 @@ const deleteAdminCompany = async (req, res) => {
   }
 };
  
-const getDeleteTrainers = async (req, res) => {
+const getTrainersWithDeletionRequest = async (req, res) => {
   try {
     const trainers = await Trainer.find({ requestDeletion: true });
     res.status(200).json(trainers);
   } catch (error) {
-    console.error("Error fetching trainers:", error);
+    console.error("Error fetching trainers with deletion request:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -465,7 +461,7 @@ module.exports = {
   checkPurchaseOrders,
   getCompaniesWithDeletionRequest,
   deleteAdminCompany,
-  getDeleteTrainers,
+  getTrainersWithDeletionRequest,
   deleteAdminTrainer
 };
  

@@ -12,6 +12,8 @@ const companySchema = new mongoose.Schema({
   password: { type: String, required: true },
   domain: { type: String, required: true },
   role: { type: String, default: "company" },
-});
+  requestDeletion: {type:Boolean, default: false},
+}, { minimize: false });
 
 module.exports = mongoose.model("Company", companySchema);
+
