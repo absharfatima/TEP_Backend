@@ -1,4 +1,4 @@
-// models/trainerModel.js
+// models/invoiceModel.js
 
 const mongoose = require("mongoose");
 

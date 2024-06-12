@@ -1,14 +1,13 @@
-// models/trainerModel.js
+// models/feedbackModel.js
 
 const mongoose = require("mongoose");
 
 // Define the feedback schema
 const feedbackSchema = new mongoose.Schema({
-  company_id: String, 
-  trainer_name: String,
-  trainer_id: String,
+  companyName: String, 
+  trainerName: String,
   stars: Number,
-  feedback_description: String,
+  feedbackDescription: String,
 });
 
 module.exports = mongoose.model("Feedback", feedbackSchema);

@@ -108,31 +108,6 @@ const deleteCompany = async (req, res) => {
   }
 };
  
-// const getBusinessRequests = async (req, res) => {
-//   try {
-//     const data = await BusinessRequest.aggregate([
-//       {
-//         $lookup: {
-//           from: "purchaseorders", // Collection name of purchase order
-//           localField: "_id",
-//           foreignField: "businessRequestId",
-//           as: "purchaseOrders",
-//         },
-//       },
-//       {
-//         $match: {
-//           purchaseOrders: { $size: 0 }, // Filter out business requests without linked purchase orders
-//         },
-//       },
-//     ]);
- 
-//     res.json(data);
-//   } catch (error) {
-//     console.error("Error fetching data:", error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// };
- 
 const getBusinessRequests = async (req, res) => {
   try {
     const data = await BusinessRequest.aggregate([
@@ -171,6 +146,7 @@ const getBusinessRequests = async (req, res) => {
   }
 };
  
+
 const getPurchaseOrders = async (req, res) => {
   try {
     const purchaseOrders = await PurchaseOrder.find();
@@ -181,6 +157,7 @@ const getPurchaseOrders = async (req, res) => {
   }
 };
  
+
 const createPurchaseOrder = async (req, res) => {
   const {
     businessRequestId,
@@ -190,20 +167,39 @@ const createPurchaseOrder = async (req, res) => {
     startDate,
     endDate,
   } = req.body;
+
   try {
+    // Fetch the BusinessRequest to get the company ID
+    const businessRequest = await BusinessRequest.findById(businessRequestId);
+    if (!businessRequest) {
+      return res.status(400).json({ message: "Invalid businessRequestId" });
+    }
+
+    // Fetch the Company using the uniqueId from the BusinessRequest
+    const company = await Company.findById(businessRequest.uniqueId);
+    if (!company) {
+      return res.status(400).json({ message: "Invalid company uniqueId" });
+    }
+
+    const companyEmail = company.email;
+
     const trainer = await Trainer.findOne({ email: trainerEmail });
     if (!trainer) {
       return res.status(404).json({ message: "Trainer not found" });
     }
+
+    // Create the new PurchaseOrder
     const newPurchaseOrder = new PurchaseOrder({
       businessRequestId,
-      trainer: trainer._id,
+      trainerId: trainer._id,
       trainerEmail,
+      companyEmail, 
       amount,
       status,
       startDate,
       endDate,
     });
+
     const savedPurchaseOrder = await newPurchaseOrder.save();
     res.status(201).json(savedPurchaseOrder);
   } catch (error) {
@@ -211,7 +207,8 @@ const createPurchaseOrder = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
- 
+
+
 const deleteBusinessRequest = async (req, res) => {
   const requestId = req.params.id;
   try {

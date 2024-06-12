@@ -6,6 +6,7 @@ const PurchaseOrder = require("../models/purchaseOrdersModel");
 
 const TrainerInvoice = require("../models/trainerInvoiceModel");
 
+
 const registerTrainer = async (req, res) => {
   try {
     const {
@@ -72,7 +73,6 @@ const getTrainerByEmail = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 const updateTrainerByEmail = async (req, res) => {
   const { email: updatedEmail } = req.params; // Rename 'email' to 'updatedEmail'
@@ -146,20 +146,27 @@ const updateTrainerByEmail = async (req, res) => {
 };
 
 
-
-
-//get all the details of PO for a particular trainer id
-const  getPoByEmail = async(req,res) =>{
+//get purchase order
+const getPoByEmail = async (req, res) => {
   const { email } = req.params;
- 
   try {
-    const purchaseOrders = await PurchaseOrder.find({ trainerEmail: email });
-    res.json(purchaseOrders);
+    const purchaseOrders = await PurchaseOrder.find({ trainerEmail: email })
+      .populate({
+        path: 'businessRequestId',
+        populate: {
+          path: 'uniqueId', // Assuming uniqueId refers to the Company collection
+          select: 'email', // Only select the email field from the Company collection
+        },
+      })
+      .exec();
+
+    res.status(200).json(purchaseOrders);
   } catch (error) {
     console.error('Error fetching purchase orders:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
-}
+};
+
 
 // fetched trainer accepted tarinings i.e feching my training for particular trainer
 const getAcceptedPoByEmail = async (req, res) => {
@@ -171,6 +178,7 @@ const getAcceptedPoByEmail = async (req, res) => {
       status: true,
     });
     res.json(purchaseOrders);
+    console.log('purchaseOrders >> ', JSON.stringify(purchaseOrders));
   } catch (error) {
     console.error("Error fetching purchase orders:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -237,6 +245,7 @@ const raiseInvoiceByPoId = async (req, res) => {
       trainerId: trainer._id,
       poId: purchaseOrder._id,
       businessId: purchaseOrder.businessRequestId,
+      companyEmail: purchaseOrder.companyEmail,
       name: trainer.name,
       email: trainer.email,
       amount: purchaseOrder.amount,

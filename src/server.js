@@ -5,9 +5,12 @@ const authRoutes = require("./routes/authRoutes");
 const trainerRoutes = require("./routes/trainerRoutes");
 const companyRoutes = require("./routes/companyRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const contactRoutes = require("./routes/contactRoutes");
 
 const PORT = process.env.PORT || 3001;
 const uri = "mongodb+srv://avinash:avinash@cluster0.rlhitli.mongodb.net/";
+//const uri = "mongodb://localhost:27017/";
+
 
 const router = express();
 
@@ -20,6 +23,7 @@ router.use(authRoutes);
 router.use(trainerRoutes);
 router.use(companyRoutes);
 router.use(adminRoutes);
+router.use(contactRoutes);
 
 // Connect to MongoDB Atlas
 mongoose
