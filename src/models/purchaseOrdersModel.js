@@ -16,6 +16,8 @@ const purchaseOrdersSchema = new mongoose.Schema({
   },
   trainerEmail: { type: String, required: true },
   companyEmail: { type: String, required: true }, 
+  batchName: { type: String, required: true },
+  technology: { type: String, required: true }, 
   amount: { type: Number, required: true },
   status: { type: Boolean, required: true },
   endDate: { type: Date, required: true },

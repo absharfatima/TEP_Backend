@@ -16,7 +16,7 @@ const registerTrainer = async (req, res) => {
       email,
       contactNumber,
       // skills,
-      // city,
+      city,
       // chargePerDay,
     } = req.body;
  
@@ -29,7 +29,7 @@ const registerTrainer = async (req, res) => {
       email,
       contactNumber,
       // skills,
-      // city,
+      city,
       // chargePerDay,
     });
  
@@ -168,7 +168,7 @@ const getPoByEmail = async (req, res) => {
 };
 
 
-// fetched trainer accepted tarinings i.e feching my training for particular trainer
+// fetched trainer accepted trainings i.e feching my training for particular trainer
 const getAcceptedPoByEmail = async (req, res) => {
   const { email } = req.params;
 
@@ -248,6 +248,8 @@ const raiseInvoiceByPoId = async (req, res) => {
       companyEmail: purchaseOrder.companyEmail,
       name: trainer.name,
       email: trainer.email,
+      batchName: purchaseOrder.batchName,
+      technology: purchaseOrder.technology,
       amount: purchaseOrder.amount,
       contactNumber: trainer.contactNumber,
       raiseStatus: true,

@@ -188,12 +188,16 @@ const createPurchaseOrder = async (req, res) => {
       return res.status(404).json({ message: "Trainer not found" });
     }
 
+    const batchName = businessRequest.batchName;
+    const technology = businessRequest.technology;
     // Create the new PurchaseOrder
     const newPurchaseOrder = new PurchaseOrder({
       businessRequestId,
       trainerId: trainer._id,
       trainerEmail,
       companyEmail, 
+      batchName,
+      technology,
       amount,
       status,
       startDate,
@@ -229,7 +233,7 @@ const getPurchaseOrderDetails = async (req, res) => {
       {
         $lookup: {
           from: "trainers",
-          localField: "trainer",
+          localField: "trainerId",
           foreignField: "_id",
           as: "trainerDetails",
         },
@@ -316,19 +320,22 @@ const createBusinessInvoice = async (req, res) => {
     const company = await Company.findById(businessRequest.uniqueId);
  
     const companyName = company.companyName;
-    const amount = businessRequest.trainingBudget;
     const businessEmail = company.email;
+    const batchName = businessRequest.batchName;
+    const technology = businessRequest.technology;
+    const amount = businessRequest.trainingBudget;
+    
     const newInvoice = new BusinessInvoice({
       poId,
       businessId,
       companyName,
+      businessEmail,
+      batchName,
+      technology,
       amount,
-      batches,
       startDate,
       endDate,
-      technologies,
       paymentStatus,
-      businessEmail,
     });
     console.log(newInvoice);
  

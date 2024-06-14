@@ -1,4 +1,4 @@
-// models/trainerModel.js
+// models/trainerInvoiceModel.js
 
 const mongoose = require("mongoose");
 
@@ -19,8 +19,10 @@ const trainerInvoiceSchema = new mongoose.Schema({
     required: true,
   },
   name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
+  email: { type: String, required: true},
   companyEmail: { type: String, required: true },
+  batchName : { type: String, required: true },
+  technology : { type: String, required: true },
   amount: { type: String, required: true },
   contactNumber: { type: String, required: true },
   raiseStatus: { type: Boolean, required: true, default: true },

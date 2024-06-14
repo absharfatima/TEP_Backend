@@ -10,7 +10,7 @@ const trainerSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   contactNumber: { type: String, required: true },
 
-  city: { type: String,  },
+  city: { type: String, required: true },
   // chargePerDay: { type: String, required: true },
   trainerType: { type: String, default: "full-time" },
   openToTravel: { type: String, default: "Yes" },
